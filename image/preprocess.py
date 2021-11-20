@@ -84,7 +84,7 @@ def get_raw_data_filenames(split):
 
 
 def read_pickle_from_file(filename):
-  with tf.gfile.Open(filename, "rb") as f:
+  with tf.compat.v1.gfile.Open(filename, "rb") as f:
     if sys.version_info >= (3, 0):
       data_dict = pickle.load(f, encoding="bytes")
     else:
@@ -111,14 +111,14 @@ def save_tfrecord(example_list, out_path, max_shard_size=4096):
     shard_size += 1
     record_writer.write(example.SerializeToString())
   record_writer.close()
-  tf.logging.info("saved {} examples to {}".format(len(example_list), out_path))
+  tf.compat.v1.logging.info("saved {} examples to {}".format(len(example_list), out_path))
 
 
 def save_merged_data(images, labels, split, merge_folder):
-  with tf.gfile.Open(
+  with tf.compat.v1.gfile.Open(
       os.path.join(merge_folder, "{}_images.npy".format(split)), "wb") as ouf:
     np.save(ouf, images)
-  with tf.gfile.Open(
+  with tf.compat.v1.gfile.Open(
       os.path.join(merge_folder, "{}_labels.npy".format(split)), "wb") as ouf:
     np.save(ouf, labels)
 
@@ -129,15 +129,15 @@ def download_and_extract():
   merge_folder = os.path.join(FLAGS.raw_data_dir, MERGE_DATA_FOLDER)
   for split in ["train", "test"]:
     for field in ["images", "labels"]:
-      if not tf.gfile.Exists(os.path.join(merge_folder, "{}_{}.npy".format(
+      if not tf.compat.v1.gfile.Exists(os.path.join(merge_folder, "{}_{}.npy".format(
           split, field))):
         all_exist = False
   if all_exist:
-    tf.logging.info("found all merged files")
+    tf.compat.v1.logging.info("found all merged files")
     return
-  tf.logging.info("downloading dataset")
-  tf.gfile.MakeDirs(download_folder)
-  tf.gfile.MakeDirs(merge_folder)
+  tf.compat.v1.logging.info("downloading dataset")
+  tf.compat.v1.gfile.MakeDirs(download_folder)
+  tf.compat.v1.gfile.MakeDirs(merge_folder)
   if FLAGS.task_name == "cifar10":
     tf.contrib.learn.datasets.base.maybe_download(
         CIFAR_TARNAME, download_folder, CIFAR_DOWNLOAD_URL)
@@ -163,7 +163,7 @@ def download_and_extract():
           download_folder,
           SVHN_DOWNLOAD_URL.format(split))
       filename = os.path.join(download_folder, "{}_32x32.mat".format(split))
-      data_dict = scipy.io.loadmat(tf.gfile.Open(filename))
+      data_dict = scipy.io.loadmat(tf.compat.v1.gfile.Open(filename))
       images = np.transpose(data_dict["X"], [3, 0, 1, 2])
       labels = data_dict["y"].reshape(-1)
       labels[labels == 10] = 0
@@ -175,10 +175,10 @@ def load_dataset():
   download_and_extract()
   merge_folder = os.path.join(FLAGS.raw_data_dir, MERGE_DATA_FOLDER)
   for split in ["train", "test"]:
-    with tf.gfile.Open(
+    with tf.compat.v1.gfile.Open(
         os.path.join(merge_folder, "{}_images.npy".format(split))) as inf:
       images = np.load(inf)
-    with tf.gfile.Open(
+    with tf.compat.v1.gfile.Open(
         os.path.join(merge_folder, "{}_labels.npy".format(split))) as inf:
       labels = np.load(inf)
     data[split] = {"images": images, "labels": labels}
@@ -245,7 +245,7 @@ def process_and_save_sup_data(chosen_images, chosen_labels, split, sup_size=-1):
       FLAGS.output_base_dir,
       format_sup_filename(split, sup_size)
   )
-  tf.logging.info(">> saving {} {} examples to {}".format(
+  tf.compat.v1.logging.info(">> saving {} {} examples to {}".format(
       len(example_list), split, out_path))
   save_tfrecord(example_list, out_path)
 
@@ -314,29 +314,29 @@ def proc_and_dump_unsup_data(sub_set_data, aug_copy_num):
 def main(unused_argv):
 
   output_base_dir = FLAGS.output_base_dir
-  if not tf.gfile.Exists(output_base_dir):
-    tf.gfile.MakeDirs(output_base_dir)
+  if not tf.compat.v1.gfile.Exists(output_base_dir):
+    tf.compat.v1.gfile.MakeDirs(output_base_dir)
 
   data = load_dataset()
   if FLAGS.data_type == "sup":
-    tf.logging.info("***** Processing supervised data *****")
+    tf.compat.v1.logging.info("***** Processing supervised data *****")
     # process training set
     proc_and_dump_sup_data(data["train"], "train", sup_size=FLAGS.sup_size)
     # process test set
     proc_and_dump_sup_data(data["test"], "test")
   elif FLAGS.data_type == "unsup":
-    tf.logging.info("***** Processing unsupervised data *****")
+    tf.compat.v1.logging.info("***** Processing unsupervised data *****")
     # Just to make sure that different tfrecord files do not have data stored
     # in the same order. Since we read several tfrecord files in parallel, if
     # different tfrecord files have the same order, it is more probable that
     # multiple augmented examples of the same original example appear in the same
     # mini-batch.
-    tf.logging.info(
+    tf.compat.v1.logging.info(
         "using random seed {:d} for shuffling data".format(random_seed))
     np.random.seed(random_seed)
     for aug_copy_num in range(
         FLAGS.aug_copy_start, FLAGS.aug_copy_start + FLAGS.aug_copy):
-      tf.logging.info(
+      tf.compat.v1.logging.info(
           ">> processing aug copy # {}".format(aug_copy_num))
       proc_and_dump_unsup_data(data["train"], aug_copy_num)
 
@@ -371,5 +371,5 @@ if __name__ == "__main__":
   flags.DEFINE_integer(
       "aug_copy_start", 0, "The index of the first augmented copy.")
 
-  tf.logging.set_verbosity(tf.logging.INFO)
-  tf.app.run(main)
+  tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
+  tf.compat.v1.app.run(main)
