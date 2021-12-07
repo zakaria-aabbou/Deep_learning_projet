@@ -6,12 +6,12 @@ cutout: 16
 
 # UDA-related hyperparams
 batch: 32
-batch_unsup: 960
+batch_unsup: 100 #960
 ratio_unsup: 5.0
 ratio_mode: 'constant'
 
 # training params
-epoch: 1 # 1600
+epoch: 3 # 1600
 lr: 0.0001
 lr_schedule:
   type: 'cosine'
