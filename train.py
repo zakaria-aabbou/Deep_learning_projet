@@ -84,6 +84,7 @@ def run_epoch(model, loader_s, loader_u, loss_fn, optimizer, desc_default='', ep
 
         top1, top5 = accuracy(preds, label, (1, 5))
 
+
         metrics.add_dict({
             'loss': loss.item() * len(data),
             'top1': top1.item() * len(data),
