@@ -118,8 +118,6 @@ def train_and_eval(tag, dataroot, metric='last', save_path=None, only_eval=False
     trainloader, unsuploader, testloader = get_dataloaders(C.get()['dataset'], C.get()['batch'], C.get()['batch_unsup'], dataroot)
 
     # create a model & an optimizer
-    print("111",C.get()['model'])
-    print("222",num_class(C.get()['dataset']))
     model = get_model(C.get()['model'], num_class(C.get()['dataset']), data_parallel=True)
 
     criterion = nn.CrossEntropyLoss()

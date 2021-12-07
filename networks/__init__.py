@@ -34,7 +34,7 @@ def get_model(conf, num_class=10, data_parallel=True):
 
 def num_class(dataset):
     return {
-        'mnsit': 10,
+        'mnist': 10,
         'cifar10': 10,
         'reduced_cifar10': 10,
         'cifar100': 100,
