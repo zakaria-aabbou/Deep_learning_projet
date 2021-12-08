@@ -133,7 +133,7 @@ def train_and_eval(tag, dataroot, metric='last', save_path=None, only_eval=False
             weight_decay=C.get()['optimizer']['decay'],
             nesterov=C.get()['optimizer']['nesterov']
         )
-    if C.get()['optimizer']['type'] == 'adam':
+    elif C.get()['optimizer']['type'] == 'adam':
         optimizer = optim.Adam(
             model.parameters(),
             lr= 0.01 # or C.get()['lr']

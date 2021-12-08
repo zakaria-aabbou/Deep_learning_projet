@@ -19,6 +19,6 @@ lr_schedule:
     multiplier: 300
     epoch: 120
 optimizer:
-  type:  sgd #adam
+  type: sgd
   nesterov: True
   decay: 0.0005
