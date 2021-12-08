@@ -1,5 +1,5 @@
 model:
-  type: cnn #wresnet28_2
+  type:  wresnet28_2 #cnn
 dataset: mnist
 aug: fa_reduced_cifar10   # autoaug_extend
 cutout: 16
@@ -19,6 +19,6 @@ lr_schedule:
     multiplier: 300
     epoch: 120
 optimizer:
-  type: adam #sgd
+  type:  sgd #adam
   nesterov: True
   decay: 0.0005
