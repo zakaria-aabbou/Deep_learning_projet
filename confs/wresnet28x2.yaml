@@ -1,5 +1,5 @@
 model:
-  type: wresnet28_2
+  type: cnn #wresnet28_2
 dataset: mnist
 aug: fa_reduced_cifar10   # autoaug_extend
 cutout: 16
@@ -11,7 +11,7 @@ ratio_unsup: 5.0
 ratio_mode: 'constant'
 
 # training params
-epoch: 3 # 1600
+epoch: 10 # 1600
 lr: 0.0001
 lr_schedule:
   type: 'cosine'
@@ -19,6 +19,6 @@ lr_schedule:
     multiplier: 300
     epoch: 120
 optimizer:
-  type: sgd
+  type: adam #sgd
   nesterov: True
   decay: 0.0005

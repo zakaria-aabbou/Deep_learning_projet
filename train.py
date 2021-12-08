@@ -75,11 +75,14 @@ def run_epoch(model, loader_s, loader_u, loss_fn, optimizer, desc_default='', ep
                 raise ValueError
 
         if optimizer:
+            # backpropagation, compute gradients 
             loss.backward()
             if C.get()['optimizer'].get('clip', 5) > 0:
                 nn.utils.clip_grad_norm_(model.parameters(), C.get()['optimizer'].get('clip', 5))
 
+            # apply gradients  
             optimizer.step()
+            # clear gradients for this training step 
             optimizer.zero_grad()
 
         top1, top5 = accuracy(preds, label, (1, 5))
@@ -129,6 +132,13 @@ def train_and_eval(tag, dataroot, metric='last', save_path=None, only_eval=False
             momentum=C.get()['optimizer'].get('momentum', 0.9),
             weight_decay=C.get()['optimizer']['decay'],
             nesterov=C.get()['optimizer']['nesterov']
+        )
+    if C.get()['optimizer']['type'] == 'adam':
+        optimizer = optim.Adam(
+            model.parameters(),
+            lr= 0.01 # or C.get()['lr']
+            # ADD more parameters for adam optimizer
+
         )
     else:
         raise ValueError('invalid optimizer type=%s' % C.get()['optimizer']['type'])

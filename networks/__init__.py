@@ -6,6 +6,7 @@ from torch.nn import DataParallel
 import torch.backends.cudnn as cudnn
 
 from networks.wideresnet import WideResNet
+from networks.CNN import CNN
 
 
 def get_model(conf, num_class=10, data_parallel=True):
@@ -17,7 +18,9 @@ def get_model(conf, num_class=10, data_parallel=True):
         model = WideResNet(28, 2, dropout_rate=0.0, num_classes=num_class)
     elif name == 'wresnet28_10':
         model = WideResNet(28, 10, dropout_rate=0.0, num_classes=num_class)
-
+    elif name == 'cnn':
+        model = CNN()
+    
     else:
         raise NameError('no model named, %s' % name)
 
